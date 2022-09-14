@@ -52,15 +52,16 @@ public class ProductServiceTests {
 	private PageImpl<Product> page;
 	private Product product;
 	private Category category;
-	ProductDTO productDTO;
+	private ProductDTO productDTO;
 
 	@BeforeEach
 	void setUp() throws Exception {
 		existingId = 1L;
 		nonExistingId = 1000L;
 		dependentId = 4L;
-		product = Factory.creatProduct();
-		productDTO = Factory.creatProductDTO();
+		product = Factory.createProduct();
+		category = Factory.createCategory();
+		productDTO = Factory.createProductDTO();
 		page = new PageImpl<>(List.of(product));
 
 		Mockito.when(repository.findAll((Pageable) ArgumentMatchers.any())).thenReturn(page);
