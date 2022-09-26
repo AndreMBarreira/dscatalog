@@ -34,7 +34,8 @@ public class ProductService {
 	public Page<ProductDTO> findAllPaged(Pageable pageable) {
 		Page<Product> list = repository.findAll(pageable);
 
-		return list.map(x -> new ProductDTO(x));
+		return list.map(x -> new ProductDTO(x, x.getCategories()));
+//		return list.map(x -> new ProductDTO(x));
 	}
 
 	@Transactional(readOnly = true)
