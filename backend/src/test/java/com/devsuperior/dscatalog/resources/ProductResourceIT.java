@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.dscatalog.dto.ProductDTO;
 import com.devsuperior.dscatalog.tests.Factory;
+import com.devsuperior.dscatalog.tests.TokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -29,10 +30,15 @@ public class ProductResourceIT {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@Autowired
+	private TokenUtil tokenUtil;
 
 	private long existingId;
 	private long nonExistingId;
 	private long countTotalProducts;
+	private String username;
+	private String password;
 
 	private ProductDTO productDTO;
 
@@ -41,6 +47,8 @@ public class ProductResourceIT {
 		existingId = 1L;
 		nonExistingId = 1000L;
 		countTotalProducts = 25L;
+		username = "maria@gmail.com";
+		password = "123456";
 
 		productDTO = Factory.createProductDTO();
 	}
@@ -48,6 +56,8 @@ public class ProductResourceIT {
 	@Test
 	public void updateShouldReturnProductWhenIdExists() throws Exception {
 
+		String acessToken = tokenUtil.obtainAccessToken(mockMvc, username, password);
+		
 		String jsonBody = objectMapper.writeValueAsString(productDTO);
 
 		String expectedName = productDTO.getName();
@@ -55,6 +65,7 @@ public class ProductResourceIT {
 
 		ResultActions result = 
 				mockMvc.perform(put("/products/{id}", existingId)
+				.header("Authorization", "Bearer" +acessToken)
 				.content(jsonBody)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON));
@@ -68,11 +79,14 @@ public class ProductResourceIT {
 	@Test
 	public void updateShouldReturnNotFoundWhenIdDoesNotExists() throws Exception {
 
+		String acessToken = tokenUtil.obtainAccessToken(mockMvc, username, password);
+		
 		String jsonBody = objectMapper.writeValueAsString(productDTO);
 
 
 		ResultActions result = 
 				mockMvc.perform(put("/products/{id}", nonExistingId)
+				.header("Authorization", "Bearer" +acessToken)
 				.content(jsonBody)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON));
